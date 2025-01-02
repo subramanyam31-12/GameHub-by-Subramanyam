@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fruit Cutting Game</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #6a11cb, #2575fc); /* Calm gradient */
+        }
+
+        canvas {
+            display: block;
+        }
+
+        #scoreboard {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 20px;
+            color: white;
+            z-index: 2;
+        }
+
+        #timer {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            color: white;
+            z-index: 2;
+        }
+
+        #game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 36px;
+            color: white;
+            text-align: center;
+            display: none;
+            z-index: 3;
+        }
+    </style>
+</head>
+<body>
+    <div id="scoreboard">Score: 0</div>
+    <div id="timer">Time: 3:00</div>
+    <div id="game-over">Game Over!<br>Score: <span id="final-score"></span><br><button onclick="restartGame()">Restart</button></div>
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const fruits = [];
+        const splashes = [];
+        const fruitTypes = ["🍎", "🍌", "🍇", "🍓", "🍍"];
+        const bombType = "💣"; // Bomb emoji
+        const fruitRadius = 30;
+        let score = 0;
+        let gameRunning = true;
+        let timeRemaining = 180; // 3 minutes in seconds
+
+        const scoreboard = document.getElementById("scoreboard");
+        const timerDisplay = document.getElementById("timer");
+        const gameOverScreen = document.getElementById("game-over");
+        const finalScore = document.getElementById("final-score");
+
+        class Fruit {
+            constructor(x, y, vx, vy, type) {
+                this.x = x;
+                this.y = y;
+                this.vx = vx;
+                this.vy = vy;
+                this.type = type;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, fruitRadius, 0, Math.PI * 2);
+                ctx.fillStyle = "white";
+                ctx.fill();
+                ctx.font = "30px Arial";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(this.type, this.x, this.y);
+                ctx.closePath();
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vy += 0.1; // Gravity effect
+            }
+        }
+
+        class Splash {
+            constructor(x, y, type) {
+                this.x = x;
+                this.y = y;
+                this.type = type;
+                this.opacity = 1;
+                this.radius = fruitRadius;
+            }
+
+            draw() {
+                ctx.globalAlpha = this.opacity;
+                ctx.font = `${this.radius}px Arial`;
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(this.type, this.x, this.y);
+                ctx.globalAlpha = 1;
+            }
+
+            update() {
+                this.opacity -= 0.02;
+                this.radius += 1;
+            }
+        }
+
+        function spawnFruit() {
+            const x = Math.random() * canvas.width;
+            const y = canvas.height;
+            const vx = (Math.random() - 0.5) * 4;
+            const vy = -Math.random() * 6 - 4;
+            const isBomb = Math.random() < 0.2; // 20% chance of spawning a bomb
+            const type = isBomb ? bombType : fruitTypes[Math.floor(Math.random() * fruitTypes.length)];
+            fruits.push(new Fruit(x, y, vx, vy, type));
+        }
+
+        function updateTimer() {
+            timeRemaining--;
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            timerDisplay.textContent = `Time: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+            if (timeRemaining <= 0) {
+                endGame();
+            }
+        }
+
+        function endGame() {
+            gameRunning = false;
+            finalScore.textContent = score;
+            gameOverScreen.style.display = "block";
+        }
+
+        function restartGame() {
+            score = 0;
+            timeRemaining = 180;
+            fruits.length = 0;
+            splashes.length = 0;
+            gameRunning = true;
+            gameOverScreen.style.display = "none";
+            gameLoop();
+        }
+
+        function checkCollision(x, y) {
+            fruits.forEach((fruit, index) => {
+                const dist = Math.sqrt((x - fruit.x) ** 2 + (y - fruit.y) ** 2);
+                if (dist < fruitRadius) {
+                    if (fruit.type === bombType) {
+                        endGame(); // Game over if a bomb is cut
+                    } else {
+                        splashes.push(new Splash(fruit.x, fruit.y, fruit.type));
+                        fruits.splice(index, 1);
+                        score++;
+                    }
+                }
+            });
+        }
+
+        function updateGame() {
+            fruits.forEach((fruit, index) => {
+                fruit.update();
+                if (fruit.y > canvas.height + fruitRadius) {
+                    fruits.splice(index, 1); // Remove fruits falling out
+                }
+            });
+            splashes.forEach((splash, index) => {
+                splash.update();
+                if (splash.opacity <= 0) {
+                    splashes.splice(index, 1);
+                }
+            });
+        }
+
+        function drawGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            fruits.forEach((fruit) => fruit.draw());
+            splashes.forEach((splash) => splash.draw());
+            scoreboard.textContent = `Score: ${score}`;
+        }
+
+        canvas.addEventListener("mousemove", (e) => {
+            if (!gameRunning) return;
+            checkCollision(e.clientX, e.clientY);
+        });
+
+        canvas.addEventListener("touchmove", (e) => {
+            if (!gameRunning) return;
+            const touch = e.touches[0];
+            checkCollision(touch.clientX, touch.clientY);
+        });
+
+        function gameLoop() {
+            if (!gameRunning) return;
+            if (Math.random() < 0.02) spawnFruit();
+            updateGame();
+            drawGame();
+            requestAnimationFrame(gameLoop);
+        }
+
+        setInterval(() => {
+            if (gameRunning) updateTimer();
+        }, 1000);
+
+        gameLoop();
+    </script>
+</body>
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pool Game</title>
+    <style>
+        canvas {
+            display: block;
+            margin: 0 auto;
+            background: linear-gradient(45deg, #054d29, #071a3d);
+            border: 12px solid #654321;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.8);
+        }
+        #endScreen {
+            display: none;
+            text-align: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+        .retry {
+            background-color: #28a745;
+            color: white;
+        }
+        .quit {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+    </style>
+</head>
+<body>
+    
+    </div>
+    <canvas id="poolGame"></canvas>
+    <div id="endScreen">
+        <h2>Game Over!</h2>
+        <p id="finalScore"></p>
+        <button class="retry" onclick="retryGame()">Retry</button>
+        <button class="quit" onclick="quitGame()">Quit</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('poolGame');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = 900;
+        canvas.height = 450;
+
+        const BALL_RADIUS = 12;
+        const POCKET_RADIUS = 45; // Increased pocket size for easier scoring
+
+        const cueBall = {
+            x: 150,
+            y: canvas.height / 2,
+            dx: 0,
+            dy: 0,
+            color: 'white'
+        };
+
+        const colors = [
+            'red', 'yellow', 'blue', 'green', 'purple', 'orange',
+            '#ff8800', '#00ff88', '#ff0088', '#8888ff',
+            '#88ff88', '#ffdd44', '#44ddff', '#dd88ff', '#ff4444'
+        ];
+
+        const balls = [];
+        for (let i = 0; i < 15; i++) {
+            balls.push({
+                x: 600 + 20 * (Math.floor(i / 5) + 1),
+                y: canvas.height / 2 + (i % 5 - 2) * 25,
+                dx: 0,
+                dy: 0,
+                color: colors[i]
+            });
+        }
+
+        const stick = {
+            angle: 0,
+            power: 0
+        };
+
+        const holes = [
+            { x: 0, y: 0 },
+            { x: canvas.width / 2, y: 0 },
+            { x: canvas.width, y: 0 },
+            { x: 0, y: canvas.height },
+            { x: canvas.width / 2, y: canvas.height },
+            { x: canvas.width, y: canvas.height }
+        ];
+
+        let isAiming = false;
+        let score = 0;
+        let timeRemaining = 180;
+
+        function drawTable() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#654321';
+            holes.forEach(hole => {
+                ctx.beginPath();
+                ctx.arc(hole.x, hole.y, POCKET_RADIUS, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+
+        function drawBalls() {
+            [...balls, cueBall].forEach(ball => {
+                ctx.beginPath();
+                ctx.arc(ball.x, ball.y, BALL_RADIUS, 0, Math.PI * 2);
+                ctx.fillStyle = ball.color;
+                ctx.fill();
+                ctx.closePath();
+            });
+        }
+
+        function drawStick() {
+            if (isAiming) {
+                ctx.save();
+                ctx.translate(cueBall.x, cueBall.y);
+                ctx.rotate(stick.angle);
+                ctx.fillStyle = '#8B4513';
+                ctx.fillRect(-150, -2, 150, 4); // Stick length
+                ctx.restore();
+            }
+        }
+
+        function moveBalls() {
+            [...balls, cueBall].forEach(ball => {
+                ball.x += ball.dx;
+                ball.y += ball.dy;
+
+                // Slower movement for easier control
+                ball.dx *= 0.99; 
+                ball.dy *= 0.99;
+
+                if (Math.abs(ball.dx) < 0.1) ball.dx = 0;
+                if (Math.abs(ball.dy) < 0.1) ball.dy = 0;
+
+                // Collision with walls (sides of canvas)
+                if (ball.x - BALL_RADIUS < 0 || ball.x + BALL_RADIUS > canvas.width) {
+                    ball.dx *= -0.8; // Less bounce
+                }
+                if (ball.y - BALL_RADIUS < 0 || ball.y + BALL_RADIUS > canvas.height) {
+                    ball.dy *= -0.8; // Less bounce
+                }
+
+                // Check if ball goes into pockets
+                holes.forEach(hole => {
+                    const dist = Math.sqrt((ball.x - hole.x) ** 2 + (ball.y - hole.y) ** 2);
+                    if (dist < POCKET_RADIUS) {
+                        if (ball === cueBall) {
+                            ball.x = 150;
+                            ball.y = canvas.height / 2;
+                            ball.dx = 0;
+                            ball.dy = 0;
+                        } else {
+                            score += 1;
+                            balls.splice(balls.indexOf(ball), 1);
+                        }
+                    }
+                });
+            });
+        }
+
+        function handleCollisions() {
+            for (let i = 0; i < balls.length; i++) {
+                for (let j = i + 1; j < balls.length; j++) {
+                    ballCollision(balls[i], balls[j]);
+                }
+            }
+            balls.forEach(ball => ballCollision(ball, cueBall));
+        }
+
+        function ballCollision(ball1, ball2) {
+            const dx = ball2.x - ball1.x;
+            const dy = ball2.y - ball1.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < 2 * BALL_RADIUS) {
+                const angle = Math.atan2(dy, dx);
+                const speed1 = Math.sqrt(ball1.dx ** 2 + ball1.dy ** 2);
+                const speed2 = Math.sqrt(ball2.dx ** 2 + ball2.dy ** 2);
+
+                ball1.dx = speed2 * Math.cos(angle);
+                ball2.dx = speed1 * Math.cos(angle);
+                ball1.dy = speed2 * Math.sin(angle);
+                ball2.dy = speed1 * Math.sin(angle);
+
+                const overlap = 2 * BALL_RADIUS - dist;
+                ball1.x -= overlap * Math.cos(angle) / 2;
+                ball1.y -= overlap * Math.sin(angle) / 2;
+                ball2.x += overlap * Math.cos(angle) / 2;
+                ball2.y += overlap * Math.sin(angle) / 2;
+            }
+        }
+
+        function drawTimer() {
+            ctx.fillStyle = '#fff';
+            ctx.font = '16px Arial';
+            ctx.fillText(`Time: ${Math.floor(timeRemaining / 60)}:${String(timeRemaining % 60).padStart(2, '0')}`, canvas.width - 100, 20);
+            ctx.fillText(`Score: ${score}`, 10, 20);
+        }
+
+        function endGame() {
+            document.getElementById('finalScore').textContent = `Your Score: ${score}`;
+            document.getElementById('endScreen').style.display = 'block';
+        }
+
+        function retryGame() {
+            location.reload();
+        }
+
+        function quitGame() {
+            alert('Thanks for playing!');
+        }
+
+        canvas.addEventListener('mousemove', e => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            stick.angle = Math.atan2(mouseY - cueBall.y, mouseX - cueBall.x);
+        });
+
+        canvas.addEventListener('mousedown', () => {
+            isAiming = true;
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            isAiming = false;
+            const powerMultiplier = 3; // Increased cue ball power
+            cueBall.dx = Math.cos(stick.angle) * 15 * powerMultiplier;
+            cueBall.dy = Math.sin(stick.angle) * 15 * powerMultiplier;
+        });
+
+        function gameLoop() {
+            if (timeRemaining <= 0) {
+                endGame();
+                return;
+            }
+
+            drawTable();
+            drawBalls();
+            drawStick();
+            drawTimer();
+
+            moveBalls();
+            handleCollisions();
+
+            timeRemaining -= 1 / 60;
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        gameLoop();
+    </script>
+</body>
+</html>

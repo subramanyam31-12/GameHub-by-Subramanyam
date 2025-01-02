@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Speed Test</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #ff7e5f, #feb47b);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            width: 80%;
+            max-width: 700px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        #word-display {
+            font-size: 1.5rem;
+            margin: 20px 0;
+            background: #333;
+            padding: 15px;
+            border-radius: 8px;
+            color: #fff;
+            display: inline-block;
+        }
+
+        #input-box {
+            width: 80%;
+            max-width: 500px;
+            padding: 10px;
+            font-size: 1.2rem;
+            border-radius: 5px;
+            border: 2px solid #ddd;
+            outline: none;
+        }
+
+        #input-box:focus {
+            border-color: #ff7e5f;
+        }
+
+        #timer {
+            font-size: 1.2rem;
+            margin: 10px 0;
+        }
+
+        #score {
+            font-size: 1.5rem;
+            margin-top: 15px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-top: 20px;
+            font-size: 1rem;
+            color: #fff;
+            background: #ff7e5f;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .button:hover {
+            background: #feb47b;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Typing Speed Test</h1>
+        <div id="timer">Time Left: <span id="time">60</span>s</div>
+        <div id="word-display">Click "Start" to begin!</div>
+        <input type="text" id="input-box" placeholder="Type here..." disabled>
+        <div id="score" class="hidden">Your Score: <span id="final-score">0</span></div>
+        <button class="button" id="start-button">Start</button>
+    </div>
+
+    <script>
+        const wordDisplay = document.getElementById('word-display');
+        const inputBox = document.getElementById('input-box');
+        const timerElement = document.getElementById('time');
+        const startButton = document.getElementById('start-button');
+        const scoreDisplay = document.getElementById('score');
+        const finalScore = document.getElementById('final-score');
+
+        const words = [
+            'javascript', 'programming', 'developer', 'algorithm', 'function',
+            'variable', 'interface', 'component', 'application', 'synchronous',
+            'framework', 'library', 'backend', 'frontend', 'asynchronous'
+        ];
+
+        let timeLeft = 60;
+        let score = 0;
+        let currentWord = '';
+        let gameActive = false;
+
+        function getRandomWord() {
+            return words[Math.floor(Math.random() * words.length)];
+        }
+
+        function startGame() {
+            score = 0;
+            timeLeft = 60;
+            gameActive = true;
+            scoreDisplay.classList.add('hidden');
+            inputBox.value = '';
+            inputBox.disabled = false;
+            inputBox.focus();
+            startButton.disabled = true;
+            wordDisplay.textContent = getRandomWord();
+            startTimer();
+        }
+
+        function endGame() {
+            gameActive = false;
+            inputBox.disabled = true;
+            startButton.disabled = false;
+            wordDisplay.textContent = 'Click "Start" to play again!';
+            finalScore.textContent = score;
+            scoreDisplay.classList.remove('hidden');
+        }
+
+        function startTimer() {
+            const timerInterval = setInterval(() => {
+                if (timeLeft > 0 && gameActive) {
+                    timeLeft--;
+                    timerElement.textContent = timeLeft;
+                } else {
+                    clearInterval(timerInterval);
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        inputBox.addEventListener('input', () => {
+            if (inputBox.value.trim() === wordDisplay.textContent) {
+                score++;
+                inputBox.value = '';
+                wordDisplay.textContent = getRandomWord();
+            }
+        });
+
+        startButton.addEventListener('click', startGame);
+    </script>
+</body>
+</html>

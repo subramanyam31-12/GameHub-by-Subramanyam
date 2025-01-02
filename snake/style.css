@@ -1,0 +1,90 @@
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #1d9bf0, #9b59b6, #2ecc71);
+    background-size: 400% 400%;
+    animation: gradientAnimation 15s ease infinite;
+    color: white;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+@keyframes gradientAnimation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.container {
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    background-color: rgba(52, 152, 219, 0.8);
+    border-radius: 10px;
+    z-index: 2;
+}
+
+h1 {
+    color: #ecf0f1;
+    margin-bottom: 10px;
+}
+
+#gameCanvas {
+    background-color: #000;
+    margin-top: 20px;
+    border: 2px solid #ecf0f1;
+}
+
+p {
+    font-size: 18px;
+    color: #ecf0f1;
+}
+
+.buttons {
+    margin-top: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #16a085;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 5px;
+    transition: 0.3s ease;
+}
+
+button:hover {
+    background-color: #1abc9c;
+    box-shadow: 0 0 10px #1abc9c, 0 0 20px #1abc9c;
+}
+
+button:active {
+    background-color: #1d6b4e;
+    box-shadow: 0 0 5px #1d6b4e, 0 0 10px #1d6b4e;
+}
+
+/* Glowing text beside the game */
+.background-text {
+    position: absolute;
+    top: 50%; /* Vertically centered */
+    right: 10%; /* Positioned on the right side */
+    transform: translateY(-50%);
+    font-size: 60px; /* Increased font size for better visibility */
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 0 5px #e11111, 0 0 10px #ce111b, 0 0 15px #d41717, 0 0 20px #e51010, 0 0 30px 
+    #1abc9c;
+    z-index: 1;
+}
+
+.background-text span {
+    color: #16a085;
+}

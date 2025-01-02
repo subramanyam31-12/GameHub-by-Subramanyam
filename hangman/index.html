@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hangman Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom right, #c60ca7, #f01fa3); /* Gradient */
+      color: #333;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 3rem;
+      color: #222;
+    }
+
+    .game-container {
+      background-color: #fff;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      width: 80%;
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    #category {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: #007BFF;
+    }
+
+    #word-display {
+      font-size: 2rem;
+      margin: 20px 0;
+      letter-spacing: 10px;
+      font-weight: bold;
+    }
+
+    #keyboard {
+      margin-top: 20px;
+    }
+
+    button {
+      margin: 5px;
+      padding: 10px 15px;
+      font-size: 1rem;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    .letter-btn {
+      background-color: #007BFF;
+      color: white;
+    }
+
+    .letter-btn:hover {
+      background-color: #0056b3;
+      transform: scale(1.1);
+    }
+
+    .control-btn {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .control-btn:hover {
+      background-color: #218838;
+      transform: scale(1.1);
+    }
+
+    .wrong {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    #popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      z-index: 1000;
+    }
+
+    #popup h2 {
+      margin-bottom: 20px;
+      color: #28a745;
+    }
+  </style>
+</head>
+<body>
+  <h1>Hangman Game</h1>
+  <div class="game-container">
+    <div id="category">Category: Fruits</div>
+    <div id="word-display">_ _ _ _</div>
+    <div id="keyboard"></div>
+    <button id="restart-btn" class="control-btn">Restart</button>
+    <button id="quit-btn" class="control-btn">Quit</button>
+  </div>
+
+  <div id="popup">
+    <h2>Congratulations! You Won!</h2>
+    <button id="popup-restart" class="control-btn">Restart</button>
+    <button id="popup-quit" class="control-btn">Quit</button>
+  </div>
+
+  <script>
+    const words = [
+      { word: "apple", category: "Fruits" },
+      { word: "tiger", category: "Animals" },
+      { word: "india", category: "Countries" },
+      { word: "pizza", category: "Food" },
+      { word: "beach", category: "Places" },
+      { word: "elephant", category: "Animal" },
+      { word: "guitar", category: "Musical instrument" },
+      { word: "saturn", category: "Planets" },
+      { word: "Tokyo", category: "cities" },
+      { word: "football", category: "Sports" },
+      { word: "Rose", category: "Flowers" },
+      { word: "carrot", category: "Vegetables" },
+      { word: "mars", category: "Planets" },
+      { word: "Chess", category: "Games" },
+      { word: "waterfall", category: "Nature" },
+    ];
+
+    let selectedWord = "";
+    let displayedWord = [];
+    let incorrectGuesses = 0;
+    let guessedLetters = [];
+
+    const wordDisplay = document.getElementById("word-display");
+    const keyboard = document.getElementById("keyboard");
+    const categoryDisplay = document.getElementById("category");
+    const popup = document.getElementById("popup");
+    const restartBtn = document.getElementById("restart-btn");
+    const quitBtn = document.getElementById("quit-btn");
+    const popupRestart = document.getElementById("popup-restart");
+    const popupQuit = document.getElementById("popup-quit");
+
+    // Initialize Game
+    function initializeGame() {
+      const randomIndex = Math.floor(Math.random() * words.length);
+      const wordObject = words[randomIndex];
+      selectedWord = wordObject.word;
+      displayedWord = Array(selectedWord.length).fill("_");
+      guessedLetters = [];
+      incorrectGuesses = 0;
+
+      wordDisplay.textContent = displayedWord.join(" ");
+      categoryDisplay.textContent = `Category: ${wordObject.category}`;
+      createKeyboard();
+    }
+
+    // Create Keyboard
+    function createKeyboard() {
+      keyboard.innerHTML = "";
+      for (let i = 65; i <= 90; i++) {
+        const letter = String.fromCharCode(i).toLowerCase();
+        const button = document.createElement("button");
+        button.textContent = letter;
+        button.classList.add("letter-btn");
+        button.addEventListener("click", () => handleGuess(letter, button));
+        keyboard.appendChild(button);
+      }
+    }
+
+    // Handle Letter Guess
+    function handleGuess(letter, button) {
+      if (guessedLetters.includes(letter)) return;
+
+      guessedLetters.push(letter);
+
+      if (selectedWord.includes(letter)) {
+        for (let i = 0; i < selectedWord.length; i++) {
+          if (selectedWord[i] === letter) displayedWord[i] = letter;
+        }
+      } else {
+        incorrectGuesses++;
+        button.classList.add("wrong");
+      }
+
+      button.disabled = true;
+      wordDisplay.textContent = displayedWord.join(" ");
+      checkGameStatus();
+    }
+
+    // Check Game Status
+    function checkGameStatus() {
+      if (!displayedWord.includes("_")) {
+        showPopup();
+      }
+    }
+
+    // Show Popup
+    function showPopup() {
+      popup.style.display = "block";
+    }
+
+    // Restart Game
+    function restartGame() {
+      popup.style.display = "none";
+      initializeGame();
+    }
+
+    // Quit Game
+    function quitGame() {
+      window.close();
+    }
+
+    restartBtn.addEventListener("click", restartGame);
+    quitBtn.addEventListener("click", quitGame);
+    popupRestart.addEventListener("click", restartGame);
+    popupQuit.addEventListener("click", quitGame);
+
+    initializeGame();
+  </script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GameHub by Subramanyam</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="gamehub logo.png" type="image/png">
+  <style>
+/* Glowing red button style */
+.feedback-btn {
+  background-color: #FF4C4C;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 0 10px #FF4C4C, 0 0 20px #FF4C4C, 0 0 30px #FF4C4C;
+  transition: all 0.3s ease;
+}
+
+.feedback-btn:hover {
+  box-shadow: 0 0 20px #FF4C4C, 0 0 30px #FF4C4C, 0 0 40px #FF4C4C;
+}
+.nav-btn1 {
+  background-color: #58ef2a;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 0 10px #a8c905, 0 0 20px #c72c2c, 0 0 30px #ffff4c;
+  transition: all 0.3s ease;
+}
+.nav-btn1:hover {
+  box-shadow: 0 0 20px #FF4C4C, 0 0 30px #FF4C4C, 0 0 40px #FF4C4C;
+}
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1>GameHub</h1>
+    <nav>
+      <button id="about-btn" class="nav-btn">About</button>
+      <button id="contact-btn" class="nav-btn">Contact</button>
+      <button id="select-games-btn" class="nav-btn highlight">Select Games</button>
+      <a href="https://subramanyam31-12.github.io/Subbu-s-portfolio/" target="_blank" class="nav-btn1">Founder's Portfolio</a>
+    </nav>
+  </header>
+  <main class="main-content">
+    <!-- About Section -->
+    <section id="about-section" style="display: none;">
+      <h2>About GameHub</h2>
+      <p>GameHub by Subramanyam is a gaming website where you can play a variety of fun and engaging games. Our mission is to bring joy and entertainment to gamers of all ages.</p>
+      <h3>Available Games</h3>
+      <ul>
+        <li>Tic-Tac-Toe</li>
+        <li>Snake</li>
+        <li>Memory</li>
+        <li>Cyber Drift</li>
+        <li>Sudoku</li>
+        <li>Hangman</li>
+        <li>Rock-Paper-Scissors</li>
+        <li>Puzzle Slider</li>
+        <li>Flappy Bird</li>
+        <li>2048</li>
+        <li>Astroids</li>
+        <li>Pool club</li>
+        <li>Fruits Cutting</li>
+        <li>Typing Speed Test</li>
+      </ul>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact-section" style="display: none;">
+      <h2>Contact Us</h2>
+      <div class="social-icons">
+        <a href="mailto:subramanyamsubbu407@gmail.com" target="_blank">
+          <img src="https://img.icons8.com/color/48/000000/gmail--v1.png" alt="Gmail">
+        </a>
+        <a href="https://www.instagram.com/rebel_star_subbu_66/" target="_blank">
+          <img src="https://img.icons8.com/fluency/48/000000/instagram-new.png" alt="Instagram">
+        </a>
+        <a href="https://www.linkedin.com/in/vadla-subramanyam-vadla-subramanyam-b37a3528b
+        " target="_blank">
+          <img src="https://img.icons8.com/fluency/48/000000/linkedin-circled.png" alt="LinkedIn">
+        </a>
+      </div>
+      <h3>Feedback</h3>
+      <!-- Button to redirect to Google Form -->
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSdMlN_VpMi1Md2xPqymjNd7qlhnq_XOIKdIpd11rQBdawOWvg/viewform?usp=header" target="_blank">
+        <button class="feedback-btn">Give Feedback</button>
+      </a>
+    </section>
+
+    <!-- Select Games Section -->
+    <h2 id="select-games-heading" style="display: none;">Select a Game</h2>
+    <div id="game-buttons" class="game-buttons" style="display: none;">
+      <a href="tic-tac-tae/index.html"><button class="game-btn game1">Tic-Tac-Toe</button></a>
+      <a href="snake/index.html"><button class="game-btn game2">Snake</button></a>
+      <a href="rock-paper-scissor/index.html"><button class="game-btn game3">Rock-Paper-Scissors</button></a>
+      <a href="2048/index.html"><button class="game-btn game4">2048</button></a>
+      <a href="Memory game/index.html"><button class="game-btn game5">Memory Game</button></a>
+      <a href="rummy/index.html"><button class="game-btn game6">Cyber Drift</button></a>
+      <a href="pool club/index.html"><button class="game-btn game7">Pool Club</button></a>
+      <a href="sudoku/index.html"><button class="game-btn game8">Sudoku</button></a>
+      <a href="puzzle slider/index.html"><button class="game-btn game9">Puzzle Slider</button></a>
+      <a href="Astroids/index.html"><button class="game-btn game10">Astroids</button></a>
+      <a href="flappy bird/index.html"><button class="game-btn game11">Flappy Bird</button></a>
+      <a href="platform jumper/index.html"><button class="game-btn game12">Fruits Cutting</button></a>
+      <a href="hangman/index.html"><button class="game-btn game13">Hangman</button></a>
+      <a href="typeing speed/index.html"><button class="game-btn game14">Typing Speed Test</button></a>
+    </div>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html> 

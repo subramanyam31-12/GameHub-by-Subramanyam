@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Drift</title>
+    <style>
+        body {
+            margin: 0;
+            background: linear-gradient(to bottom, #333, #000);
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+
+        canvas {
+            display: block;
+            margin: 0 auto;
+        }
+
+        #restartButton {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 15px 30px;
+            font-size: 18px;
+            color: white;
+            background: linear-gradient(90deg, #ff3e3e, #ff7878);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+        }
+
+        #restartButton:hover {
+            transform: translate(-50%, -50%) scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="background-text">
+        <span>GameHub
+        </span>
+    </div>
+    <canvas id="gameCanvas"></canvas>
+    <button id="restartButton">Restart Game</button>
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = 400;
+        canvas.height = window.innerHeight;
+
+        const restartButton = document.getElementById("restartButton");
+
+        // Game Variables
+        let player = { x: 180, y: canvas.height - 120, width: 40, height: 80, color: "#00ffcc", speed: 5, nitro: false };
+        let enemyCars = [];
+        let roadMarkers = [];
+        let powerUps = [];
+        let score = 0;
+        let level = 1;
+        let lives = 3;
+        let gameOver = false;
+
+        // Utility Functions
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // Create Lane Markers
+        function createMarkers() {
+            for (let i = 0; i < canvas.height; i += 60) {
+                roadMarkers.push({ x: canvas.width / 2 - 5, y: i, width: 10, height: 40 });
+            }
+        }
+
+        // Draw Lane Markers
+        function drawMarkers() {
+            ctx.fillStyle = "#ffffff";
+            roadMarkers.forEach(marker => {
+                ctx.fillRect(marker.x, marker.y, marker.width, marker.height);
+            });
+        }
+
+        // Update Lane Markers
+        function updateMarkers() {
+            roadMarkers.forEach(marker => {
+                marker.y += 3 + level; // Slower speed for better control
+                if (marker.y > canvas.height) marker.y = -40;
+            });
+        }
+
+        // Draw Player Car
+        function drawPlayer() {
+            ctx.fillStyle = player.color;
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+            if (player.nitro) {
+                ctx.fillStyle = "rgba(0, 255, 255, 0.5)";
+                ctx.fillRect(player.x - 5, player.y + player.height, player.width + 10, 20);
+            }
+        }
+
+        // Create Enemy Cars
+        function createEnemyCar() {
+            const laneX = [100, 180, 260];
+            const randomLane = laneX[getRandomInt(0, laneX.length - 1)];
+            enemyCars.push({
+                x: randomLane,
+                y: -100,
+                width: 40,
+                height: 80,
+                speed: getRandomInt(2, 4 + level), // Reduced speed for better gameplay
+                color: `hsl(${getRandomInt(0, 360)}, 80%, 50%)`,
+            });
+        }
+
+        // Draw Enemy Cars
+        function drawEnemyCars() {
+            enemyCars.forEach(car => {
+                ctx.fillStyle = car.color;
+                ctx.fillRect(car.x, car.y, car.width, car.height);
+            });
+        }
+
+        // Update Enemy Cars
+        function updateEnemyCars() {
+            enemyCars.forEach((car, index) => {
+                car.y += car.speed;
+
+                // Collision Detection
+                if (
+                    player.x < car.x + car.width &&
+                    player.x + player.width > car.x &&
+                    player.y < car.y + car.height &&
+                    player.y + player.height > car.y
+                ) {
+                    lives--;
+                    enemyCars.splice(index, 1);
+                    if (lives <= 0) endGame();
+                }
+
+                // Remove cars that go off-screen
+                if (car.y > canvas.height) {
+                    score += 10;
+                    enemyCars.splice(index, 1);
+                }
+            });
+        }
+
+        // Restart Game
+        function restartGame() {
+            player = { x: 180, y: canvas.height - 120, width: 40, height: 80, color: "#00ffcc", speed: 5, nitro: false };
+            enemyCars = [];
+            roadMarkers = [];
+            powerUps = [];
+            score = 0;
+            level = 1;
+            lives = 3;
+            gameOver = false;
+            restartButton.style.display = "none";
+            createMarkers();
+            gameLoop();
+        }
+
+        // Draw Power-Ups
+        function drawPowerUps() {
+            ctx.fillStyle = "#ffff33";
+            powerUps.forEach(pu => {
+                ctx.beginPath();
+                ctx.arc(pu.x, pu.y, pu.size / 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.closePath();
+            });
+        }
+
+        // Update Power-Ups
+        function updatePowerUps() {
+            powerUps.forEach((pu, index) => {
+                pu.y += 3 + level;
+
+                // Collision with player
+                const dist = Math.hypot(player.x + player.width / 2 - pu.x, player.y + player.height / 2 - pu.y);
+                if (dist < player.width / 2 + pu.size / 2) {
+                    powerUps.splice(index, 1);
+                    player.nitro = true;
+                    player.speed += 3; // Temporary boost
+                    setTimeout(() => {
+                        player.nitro = false;
+                        player.speed = 5;
+                    }, 5000);
+                }
+            });
+        }
+
+        // Game Loop
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Road
+            ctx.fillStyle = "#333333";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Lane Markers
+            drawMarkers();
+            updateMarkers();
+
+            // Draw Cars and Power-ups
+            drawPlayer();
+            drawEnemyCars();
+            updateEnemyCars();
+            drawPowerUps();
+            updatePowerUps();
+
+            // Display Score and Lives
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "20px Arial";
+            ctx.fillText(`Score: ${score}`, 10, 30);
+            ctx.fillText(`Lives: ${lives}`, 10, 60);
+
+            // Level Up
+            if (score % 100 === 0 && score > 0) {
+                level++;
+            }
+
+            if (!gameOver) requestAnimationFrame(gameLoop);
+        }
+
+        // End Game
+        function endGame() {
+            gameOver = true;
+            ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "40px Arial";
+            ctx.fillText("Game Over", canvas.width / 2 - 100, canvas.height / 2 - 20);
+            ctx.font = "20px Arial";
+            ctx.fillText(`Final Score: ${score}`, canvas.width / 2 - 80, canvas.height / 2 + 20);
+            restartButton.style.display = "block";
+        }
+
+        // Event Listeners
+        window.addEventListener("keydown", e => {
+            if (e.key === "ArrowLeft" && player.x > 100) player.x -= 80;
+            if (e.key === "ArrowRight" && player.x < 260) player.x += 80;
+        });
+
+        restartButton.addEventListener("click", restartGame);
+
+        // Initialize Game
+        createMarkers();
+        setInterval(createEnemyCar, 2000); // Spawn cars
+        setInterval(() => powerUps.push({ x: getRandomInt(100, 300), y: -20, size: 20 }), 7000); // Spawn power-ups
+        gameLoop();
+    </script>
+</body>
+</html>

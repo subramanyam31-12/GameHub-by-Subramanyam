@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sudoku Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: linear-gradient(120deg, #89f7fe, #66a6ff);
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            margin-top: 20px;
+            color: #fff;
+        }
+
+        #sudoku-board {
+            display: grid;
+            grid-template-columns: repeat(9, 40px);
+            gap: 2px;
+            justify-content: center;
+            margin: 20px auto;
+        }
+
+        .cell {
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            line-height: 40px;
+            font-size: 18px;
+            border: 1px solid #333;
+            background-color: #fff;
+            color: #333;
+        }
+
+        .cell.editable {
+            background-color: #f0f8ff;
+            cursor: pointer;
+        }
+
+        .cell.conflict {
+            background-color: #ffcccc;
+        }
+
+        .cell:focus {
+            outline: 2px solid #00bcd4;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #message {
+            font-size: 18px;
+            color: #ff5722;
+            margin: 20px;
+        }
+        .background-text {
+  position: absolute;
+  top: 50%; /* Vertically centered */
+  right: 10%; /* Positioned on the right side */
+  transform: translateY(-50%);
+  font-size: 60px; /* Increased font size for better visibility */
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 0 5px #e11111, 0 0 10px #ce111b, 0 0 15px #d41717, 0 0 20px #e51010, 0 0 30px 
+  #1abc9c;
+  z-index: 1;
+}
+    </style>
+</head>
+<body>
+    <div class="background-text">
+        <span>GameHub
+        </span>
+    </div>
+    <h1>Sudoku Game</h1>
+    <div id="sudoku-board"></div>
+    <button id="check-solution">Check Solution</button>
+    <button id="restart-game">Restart Game</button>
+    <div id="message"></div>
+
+    <script>
+        const board = document.getElementById('sudoku-board');
+        const message = document.getElementById('message');
+
+        let sudoku = [
+            [5, 3, null, null, 7, null, null, null, null],
+            [6, null, null, 1, 9, 5, null, null, null],
+            [null, 9, 8, null, null, null, null, 6, null],
+            [8, null, null, null, 6, null, null, null, 3],
+            [4, null, null, 8, null, 3, null, null, 1],
+            [7, null, null, null, 2, null, null, null, 6],
+            [null, 6, null, null, null, null, 2, 8, null],
+            [null, null, null, 4, 1, 9, null, null, 5],
+            [null, null, null, null, 8, null, null, 7, 9],
+        ];
+
+        // Generate the Sudoku grid
+        function generateGrid() {
+            board.innerHTML = '';
+
+            for (let row = 0; row < 9; row++) {
+                for (let col = 0; col < 9; col++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+
+                    if (sudoku[row][col] !== null) {
+                        cell.textContent = sudoku[row][col];
+                    } else {
+                        cell.contentEditable = true;
+                        cell.classList.add('editable');
+                        cell.addEventListener('input', () => handleInput(cell, row, col));
+                    }
+
+                    board.appendChild(cell);
+                }
+            }
+        }
+
+        function handleInput(cell, row, col) {
+            const value = parseInt(cell.textContent);
+
+            if (isNaN(value) || value < 1 || value > 9) {
+                cell.textContent = '';
+                return;
+            }
+
+            sudoku[row][col] = value;
+            validateBoard();
+        }
+
+        // Validate the Sudoku board
+        function validateBoard() {
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach(cell => cell.classList.remove('conflict'));
+
+            let isValid = true;
+
+            for (let row = 0; row < 9; row++) {
+                for (let col = 0; col < 9; col++) {
+                    if (sudoku[row][col] !== null && !isValidPlacement(row, col, sudoku[row][col])) {
+                        const index = row * 9 + col;
+                        cells[index].classList.add('conflict');
+                        isValid = false;
+                    }
+                }
+            }
+
+            return isValid;
+        }
+
+        function isValidPlacement(row, col, value) {
+            // Check row
+            for (let c = 0; c < 9; c++) {
+                if (c !== col && sudoku[row][c] === value) return false;
+            }
+
+            // Check column
+            for (let r = 0; r < 9; r++) {
+                if (r !== row && sudoku[r][col] === value) return false;
+            }
+
+            // Check 3x3 block
+            const startRow = Math.floor(row / 3) * 3;
+            const startCol = Math.floor(col / 3) * 3;
+
+            for (let r = startRow; r < startRow + 3; r++) {
+                for (let c = startCol; c < startCol + 3; c++) {
+                    if ((r !== row || c !== col) && sudoku[r][c] === value) return false;
+                }
+            }
+
+            return true;
+        }
+
+        // Check the solution
+        document.getElementById('check-solution').addEventListener('click', () => {
+            if (validateBoard()) {
+                message.textContent = 'Congratulations! You solved the Sudoku!';
+                message.style.color = 'green';
+            } else {
+                message.textContent = 'There are conflicts in your solution.';
+                message.style.color = 'red';
+            }
+        });
+
+        // Restart the game
+        document.getElementById('restart-game').addEventListener('click', () => {
+            sudoku = [
+                [5, 3, null, null, 7, null, null, null, null],
+                [6, null, null, 1, 9, 5, null, null, null],
+                [null, 9, 8, null, null, null, null, 6, null],
+                [8, null, null, null, 6, null, null, null, 3],
+                [4, null, null, 8, null, 3, null, null, 1],
+                [7, null, null, null, 2, null, null, null, 6],
+                [null, 6, null, null, null, null, 2, 8, null],
+                [null, null, null, 4, 1, 9, null, null, 5],
+                [null, null, null, null, 8, null, null, 7, 9],
+            ];
+
+            generateGrid();
+            message.textContent = '';
+        });
+
+        generateGrid();
+    </script>
+</body>
+</html>
