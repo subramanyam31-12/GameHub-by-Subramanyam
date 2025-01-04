@@ -7,12 +7,78 @@
   <link rel="stylesheet" href="style.css">
   <style>
     body {
-    background-image: url('gamehub logo2.webp'); /* Replace with your image path */
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    margin: 0; /* To remove any default margins */
-  }
+      background-image: url('gamehub logo2.webp'); /* Replace with your image path */
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      margin: 0; /* Remove default margins */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .welcome-container {
+      text-align: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.6); /* Semi-transparent background for text visibility */
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .welcome-heading {
+      font-size: 2rem;
+      color: #fff;
+      margin-bottom: 20px;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    }
+
+    .welcome-btn {
+      font-size: 1.2rem;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(90deg, #ff6f61, #ff9a44, #f0e34a);
+      color: white;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      animation: glow 2s infinite;
+    }
+
+    .welcome-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 20px #ff6f61, 0 0 40px #ff9a44;
+    }
+
+    @keyframes glow {
+      0% { box-shadow: 0 0 10px #ff6f61, 0 0 30px #ff9a44; }
+      50% { box-shadow: 0 0 25px #ff6f61, 0 0 50px #f0e34a; }
+      100% { box-shadow: 0 0 10px #ff6f61, 0 0 30px #ff9a44; }
+    }
+
+    /* Responsive Design for Smaller Screens */
+    @media (max-width: 768px) {
+      .welcome-heading {
+        font-size: 1.8rem;
+      }
+
+      .welcome-btn {
+        font-size: 1rem;
+        padding: 12px 25px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .welcome-heading {
+        font-size: 1.5rem;
+      }
+
+      .welcome-btn {
+        font-size: 0.9rem;
+        padding: 10px 20px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -30,4 +96,3 @@
   <script src="script.js"></script>
 </body>
 </html>
-

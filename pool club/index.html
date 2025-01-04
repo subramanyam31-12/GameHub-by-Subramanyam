@@ -12,7 +12,10 @@
             border: 12px solid #654321;
             border-radius: 12px;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.8);
+            width: 100%;
+            height: auto;
         }
+
         #endScreen {
             display: none;
             text-align: center;
@@ -25,6 +28,7 @@
             padding: 20px;
             border-radius: 10px;
         }
+
         button {
             margin: 10px;
             padding: 10px 20px;
@@ -33,20 +37,19 @@
             border: none;
             border-radius: 5px;
         }
+
         .retry {
             background-color: #28a745;
             color: white;
         }
+
         .quit {
             background-color: #dc3545;
             color: white;
         }
-        
     </style>
 </head>
 <body>
-    
-    </div>
     <canvas id="poolGame"></canvas>
     <div id="endScreen">
         <h2>Game Over!</h2>
@@ -59,11 +62,13 @@
         const canvas = document.getElementById('poolGame');
         const ctx = canvas.getContext('2d');
 
-        canvas.width = 900;
-        canvas.height = 450;
+        let canvasWidth = window.innerWidth * 0.9;
+        let canvasHeight = canvasWidth * 0.5; // Aspect ratio of 2:1
+        canvas.width = canvasWidth;
+        canvas.height = canvasHeight;
 
         const BALL_RADIUS = 12;
-        const POCKET_RADIUS = 45; // Increased pocket size for easier scoring
+        const POCKET_RADIUS = 45;
 
         const cueBall = {
             x: 150,
@@ -134,7 +139,7 @@
                 ctx.translate(cueBall.x, cueBall.y);
                 ctx.rotate(stick.angle);
                 ctx.fillStyle = '#8B4513';
-                ctx.fillRect(-150, -2, 150, 4); // Stick length
+                ctx.fillRect(-150, -2, 150, 4);
                 ctx.restore();
             }
         }
@@ -144,22 +149,19 @@
                 ball.x += ball.dx;
                 ball.y += ball.dy;
 
-                // Slower movement for easier control
-                ball.dx *= 0.99; 
-                ball.dy *= 0.99;
+                ball.dx *= 0.98; // Reduced friction for easier movement
+                ball.dy *= 0.98;
 
                 if (Math.abs(ball.dx) < 0.1) ball.dx = 0;
                 if (Math.abs(ball.dy) < 0.1) ball.dy = 0;
 
-                // Collision with walls (sides of canvas)
                 if (ball.x - BALL_RADIUS < 0 || ball.x + BALL_RADIUS > canvas.width) {
-                    ball.dx *= -0.8; // Less bounce
+                    ball.dx *= -0.8;
                 }
                 if (ball.y - BALL_RADIUS < 0 || ball.y + BALL_RADIUS > canvas.height) {
-                    ball.dy *= -0.8; // Less bounce
+                    ball.dy *= -0.8;
                 }
 
-                // Check if ball goes into pockets
                 holes.forEach(hole => {
                     const dist = Math.sqrt((ball.x - hole.x) ** 2 + (ball.y - hole.y) ** 2);
                     if (dist < POCKET_RADIUS) {
@@ -242,7 +244,7 @@
 
         canvas.addEventListener('mouseup', () => {
             isAiming = false;
-            const powerMultiplier = 3; // Increased cue ball power
+            const powerMultiplier = 4; // Increase power for faster ball movement
             cueBall.dx = Math.cos(stick.angle) * 15 * powerMultiplier;
             cueBall.dy = Math.sin(stick.angle) * 15 * powerMultiplier;
         });
@@ -267,6 +269,22 @@
         }
 
         gameLoop();
+
+        window.addEventListener('resize', () => {
+            canvasWidth = window.innerWidth * 0.9;
+            canvasHeight = canvasWidth * 0.5;
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
+
+            // Adjust the ball positions based on the new canvas size
+            cueBall.x = 150 * (canvasWidth / 900);
+            cueBall.y = canvas.height / 2;
+
+            balls.forEach((ball, index) => {
+                ball.x = (600 + 20 * (Math.floor(index / 5) + 1)) * (canvasWidth / 900);
+                ball.y = (canvas.height / 2 + (index % 5 - 2) * 25) * (canvasHeight / 500);
+            });
+        });
     </script>
 </body>
 </html>

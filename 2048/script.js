@@ -47,7 +47,7 @@ function addRandomTile() {
     }
 }
 
-// Handle keyboard input
+// Handle keyboard input (PC)
 function handleInput(e) {
     const key = e.key;
     if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) return;
@@ -64,6 +64,37 @@ function handleInput(e) {
         if (checkGameOver()) alert('Game Over!');
     }
 }
+
+// Swipe functionality for mobile
+let touchStartX = 0;
+let touchStartY = 0;
+
+document.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+});
+
+document.addEventListener('touchend', (e) => {
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
+
+    const diffX = touchEndX - touchStartX;
+    const diffY = touchEndY - touchStartY;
+
+    if (Math.abs(diffX) > Math.abs(diffY)) {
+        if (diffX > 50) {
+            handleInput({ key: 'ArrowRight' });
+        } else if (diffX < -50) {
+            handleInput({ key: 'ArrowLeft' });
+        }
+    } else {
+        if (diffY > 50) {
+            handleInput({ key: 'ArrowDown' });
+        } else if (diffY < -50) {
+            handleInput({ key: 'ArrowUp' });
+        }
+    }
+});
 
 // Slide tiles
 function slideTiles(dx, dy) {

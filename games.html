@@ -7,40 +7,141 @@
   <link rel="stylesheet" href="style.css">
   <link rel="icon" href="gamehub logo.png" type="image/png">
   <style>
-/* Glowing red button style */
-.feedback-btn {
-  background-color: #FF4C4C;
-  color: white;
-  padding: 15px 32px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  border: none;
-  border-radius: 8px;
-  box-shadow: 0 0 10px #FF4C4C, 0 0 20px #FF4C4C, 0 0 30px #FF4C4C;
-  transition: all 0.3s ease;
-}
+    /* Glowing red button style */
+    .feedback-btn {
+      background-color: #FF4C4C;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #FF4C4C, 0 0 20px #FF4C4C, 0 0 30px #FF4C4C;
+      transition: all 0.3s ease;
+    }
 
-.feedback-btn:hover {
-  box-shadow: 0 0 20px #FF4C4C, 0 0 30px #FF4C4C, 0 0 40px #FF4C4C;
-}
-.nav-btn1 {
-  background-color: #58ef2a;
-  color: white;
-  padding: 15px 32px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  border: none;
-  border-radius: 8px;
-  box-shadow: 0 0 10px #a8c905, 0 0 20px #c72c2c, 0 0 30px #ffff4c;
-  transition: all 0.3s ease;
-}
-.nav-btn1:hover {
-  box-shadow: 0 0 20px #FF4C4C, 0 0 30px #FF4C4C, 0 0 40px #FF4C4C;
-}
+    .feedback-btn:hover {
+      box-shadow: 0 0 20px #FF4C4C, 0 0 30px #FF4C4C, 0 0 40px #FF4C4C;
+    }
+
+    .nav-btn1 {
+      background-color: #58ef2a;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #a8c905, 0 0 20px #c72c2c, 0 0 30px #ffff4c;
+      transition: all 0.3s ease;
+    }
+
+    .nav-btn1:hover {
+      box-shadow: 0 0 20px #FF4C4C, 0 0 30px #FF4C4C, 0 0 40px #FF4C4C;
+    }
+
+    /* Responsive layout */
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .nav-btn {
+      font-size: 1rem;
+      padding: 10px 20px;
+      border-radius: 8px;
+      background-color: #58ef2a;
+      color: white;
+      border: none;
+      transition: background-color 0.3s;
+    }
+
+    .nav-btn.highlight {
+      background-color: #ff4c4c;
+    }
+
+    .nav-btn:hover {
+      background-color: #ff5733;
+    }
+
+    /* Main content styling */
+    .main-content {
+      text-align: center;
+    }
+
+    #select-games-heading {
+      font-size: 1.5rem;
+      margin-top: 30px;
+    }
+
+    .game-btn {
+      font-size: 1rem;
+      padding: 12px 20px;
+      margin: 5px;
+      border-radius: 8px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .game-btn:hover {
+      background-color: #0056b3;
+    }
+
+    .game-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 1.5rem;
+      }
+
+      nav {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .game-btn {
+        font-size: 0.9rem;
+        padding: 10px 15px;
+      }
+      
+      .game-buttons {
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .header h1 {
+        font-size: 1.2rem;
+      }
+
+      .game-btn {
+        font-size: 0.8rem;
+        padding: 8px 12px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -87,13 +188,11 @@
         <a href="https://www.instagram.com/rebel_star_subbu_66/" target="_blank">
           <img src="https://img.icons8.com/fluency/48/000000/instagram-new.png" alt="Instagram">
         </a>
-        <a href="https://www.linkedin.com/in/vadla-subramanyam-vadla-subramanyam-b37a3528b
-        " target="_blank">
+        <a href="https://www.linkedin.com/in/vadla-subramanyam-vadla-subramanyam-b37a3528b" target="_blank">
           <img src="https://img.icons8.com/fluency/48/000000/linkedin-circled.png" alt="LinkedIn">
         </a>
       </div>
       <h3>Feedback</h3>
-      <!-- Button to redirect to Google Form -->
       <a href="https://docs.google.com/forms/d/e/1FAIpQLSdMlN_VpMi1Md2xPqymjNd7qlhnq_XOIKdIpd11rQBdawOWvg/viewform?usp=header" target="_blank">
         <button class="feedback-btn">Give Feedback</button>
       </a>
@@ -118,6 +217,33 @@
       <a href="typeing speed/index.html"><button class="game-btn game14">Typing Speed Test</button></a>
     </div>
   </main>
-  <script src="script.js"></script>
+  <script>
+    // JavaScript for toggling visibility of sections
+    const selectGamesBtn = document.getElementById('select-games-btn');
+    const aboutBtn = document.getElementById('about-btn');
+    const contactBtn = document.getElementById('contact-btn');
+
+    const selectGamesSection = document.getElementById('game-buttons');
+    const aboutSection = document.getElementById('about-section');
+    const contactSection = document.getElementById('contact-section');
+
+    selectGamesBtn.addEventListener('click', () => {
+      selectGamesSection.style.display = 'block';
+      aboutSection.style.display = 'none';
+      contactSection.style.display = 'none';
+    });
+
+    aboutBtn.addEventListener('click', () => {
+      selectGamesSection.style.display = 'none';
+      aboutSection.style.display = 'block';
+      contactSection.style.display = 'none';
+    });
+
+    contactBtn.addEventListener('click', () => {
+      selectGamesSection.style.display = 'none';
+      aboutSection.style.display = 'none';
+      contactSection.style.display = 'block';
+    });
+  </script>
 </body>
-</html> 
+</html>

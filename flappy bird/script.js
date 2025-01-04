@@ -5,16 +5,16 @@ canvas.height = 600;
 
 let bird;
 let pipes = [];
-let gravity = 0.2;
+let gravity = 0.1; // Reduced gravity for easier gameplay
 let birdSpeed = 0;
 let birdX = 50;
 let birdY = 150;
 let birdWidth = 50;
 let birdHeight = 50;
 let gameScore = 0;
-let pipeGap = 200;
+let pipeGap = 250; // Increased gap between pipes for easier navigation
 let pipeWidth = 50;
-let pipeSpeed = 1;
+let pipeSpeed = 1; // Slower pipe speed for easier gameplay
 let isGameOver = false;
 let trees = [];
 
@@ -25,9 +25,10 @@ const spaceKey = 32;
 // Bird movement control
 document.addEventListener('keydown', controlBird);
 document.addEventListener('click', controlBird);
+document.addEventListener('touchstart', controlBird); // Added for mobile touch
 
 function controlBird(event) {
-    if (event.keyCode === spaceKey || event.type === 'click') {
+    if (event.keyCode === spaceKey || event.type === 'click' || event.type === 'touchstart') {
         birdSpeed = -6;
     }
 }
@@ -170,8 +171,8 @@ function restartGame() {
     isGameOver = false;
     gameOverScreen.style.display = 'none';
     pipeSpeed = 1;
-    gravity = 0.2;
-    pipeGap = 200;
+    gravity = 0.1;
+    pipeGap = 250;
     animate();
 }
 

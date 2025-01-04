@@ -1,3 +1,4 @@
+/* Base Styles */
 body {
     font-family: Arial, sans-serif;
     background: #faf8ef;
@@ -62,15 +63,29 @@ body {
     background: gold;
     color: #fff;
 }
-.background-text {
-    position: absolute;
-    top: 50%; /* Vertically centered */
-    right: 10%; /* Positioned on the right side */
-    transform: translateY(-50%);
-    font-size: 60px; /* Increased font size for better visibility */
-    font-weight: bold;
-    color: white;
-    text-shadow: 0 0 5px #e11111, 0 0 10px #ce111b, 0 0 15px #d41717, 0 0 20px #e51010, 0 0 30px 
-    #1abc9c;
-    z-index: 1;
-  }
+
+/* Make grid container responsive for mobile */
+@media (max-width: 480px) {
+    .game-container {
+        width: 90%;
+    }
+
+    .header h1 {
+        font-size: 28px;
+    }
+
+    .score-container {
+        font-size: 16px;
+    }
+
+    #restart {
+        padding: 5px 10px;
+        font-size: 14px;
+    }
+
+    .cell {
+        width: 50px;
+        height: 50px;
+        font-size: 18px;
+    }
+}
