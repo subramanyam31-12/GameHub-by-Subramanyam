@@ -5,16 +5,16 @@ canvas.height = 600;
 
 let bird;
 let pipes = [];
-let gravity = 0.1; // Reduced gravity for easier gameplay
+let gravity = 0.1; // Adjusted gravity for smoother flight
 let birdSpeed = 0;
 let birdX = 50;
 let birdY = 150;
 let birdWidth = 50;
 let birdHeight = 50;
 let gameScore = 0;
-let pipeGap = 250; // Increased gap between pipes for easier navigation
+let pipeGap = 300; // Increased gap for easier navigation
 let pipeWidth = 50;
-let pipeSpeed = 1; // Slower pipe speed for easier gameplay
+let pipeSpeed = 2; // Increased pipe speed for more challenge
 let isGameOver = false;
 let trees = [];
 
@@ -29,7 +29,7 @@ document.addEventListener('touchstart', controlBird); // Added for mobile touch
 
 function controlBird(event) {
     if (event.keyCode === spaceKey || event.type === 'click' || event.type === 'touchstart') {
-        birdSpeed = -6;
+        birdSpeed = -4; // Adjusted to limit upward movement
     }
 }
 
@@ -43,7 +43,7 @@ function Bird() {
         if (this.y + this.height >= canvas.height) {
             this.y = canvas.height - this.height;
         }
-        birdSpeed += gravity;
+        birdSpeed += gravity; // Gravity applied after flap
     };
     this.draw = function () {
         // Bird body
@@ -170,9 +170,9 @@ function restartGame() {
     gameScore = 0;
     isGameOver = false;
     gameOverScreen.style.display = 'none';
-    pipeSpeed = 1;
-    gravity = 0.1;
-    pipeGap = 250;
+    pipeSpeed = 2; // Increased speed
+    gravity = 0.1; // Reduced gravity for smoother flight
+    pipeGap = 300; // Easier gap
     animate();
 }
 

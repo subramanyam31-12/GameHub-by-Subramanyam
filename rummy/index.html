@@ -10,6 +10,11 @@
             background: linear-gradient(to bottom, #333, #000);
             overflow: hidden;
             font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
         }
 
         canvas {
@@ -37,15 +42,53 @@
         #restartButton:hover {
             transform: translate(-50%, -50%) scale(1.05);
         }
+
+        /* Button styles */
+        .mobile-buttons {
+            position: fixed;
+            bottom: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .mobile-buttons button {
+            background-color: #ff3e3e;
+            color: white;
+            border: none;
+            padding: 10px;
+            font-size: 20px;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s;
+        }
+
+        .mobile-buttons button:hover {
+            background-color: #ff7878;
+        }
+
+        .mobile-buttons button:active {
+            background-color: #cc2d2d;
+        }
     </style>
 </head>
 <body>
     <div class="background-text">
-        <span>GameHub
-        </span>
+        <span>GameHub</span>
     </div>
     <canvas id="gameCanvas"></canvas>
     <button id="restartButton">Restart Game</button>
+
+    <!-- Mobile Control Buttons -->
+    <div class="mobile-buttons">
+        <button id="leftButton">←</button>
+        <button id="rightButton">→</button>
+    </div>
+
     <script>
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
@@ -240,10 +283,19 @@
             restartButton.style.display = "block";
         }
 
-        // Event Listeners
+        // Event Listeners for desktop controls
         window.addEventListener("keydown", e => {
             if (e.key === "ArrowLeft" && player.x > 100) player.x -= 80;
             if (e.key === "ArrowRight" && player.x < 260) player.x += 80;
+        });
+
+        // Event listeners for mobile controls
+        document.getElementById("leftButton").addEventListener("click", () => {
+            if (player.x > 100) player.x -= 80;
+        });
+
+        document.getElementById("rightButton").addEventListener("click", () => {
+            if (player.x < 260) player.x += 80;
         });
 
         restartButton.addEventListener("click", restartGame);
