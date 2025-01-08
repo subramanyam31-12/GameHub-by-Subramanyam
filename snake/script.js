@@ -7,7 +7,7 @@ canvas.height = canvas.width;
 
 const gridSize = 20;
 const canvasSize = canvas.width;
-let snake, food, direction, score, lastUpdateTime;
+let snake, food, direction, nextDirection, score, lastUpdateTime;
 let gameRunning = false;
 
 // Buttons for mobile controls
@@ -28,6 +28,7 @@ function generateFood() {
 function initGame() {
     snake = [{ x: gridSize * 5, y: gridSize * 5 }];
     direction = { x: gridSize, y: 0 };
+    nextDirection = direction; // Track the next direction
     score = 0;
     generateFood();
     gameRunning = true;
@@ -46,6 +47,13 @@ function draw() {
 }
 
 function update() {
+    // Update direction only if it's not reversing
+    if (
+        (nextDirection.x !== -direction.x || nextDirection.y !== -direction.y)
+    ) {
+        direction = nextDirection;
+    }
+
     const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
     snake.unshift(head);
 
@@ -89,17 +97,30 @@ function gameLoop(timestamp) {
 
 // Event listeners
 document.addEventListener("keydown", e => {
-    if (e.key === "ArrowUp" && direction.y === 0) direction = { x: 0, y: -gridSize };
-    else if (e.key === "ArrowDown" && direction.y === 0) direction = { x: 0, y: gridSize };
-    else if (e.key === "ArrowLeft" && direction.x === 0) direction = { x: -gridSize, y: 0 };
-    else if (e.key === "ArrowRight" && direction.x === 0) direction = { x: gridSize, y: 0 };
+    if (e.key === "ArrowUp" && direction.y === 0) {
+        nextDirection = { x: 0, y: -gridSize };
+    } else if (e.key === "ArrowDown" && direction.y === 0) {
+        nextDirection = { x: 0, y: gridSize };
+    } else if (e.key === "ArrowLeft" && direction.x === 0) {
+        nextDirection = { x: -gridSize, y: 0 };
+    } else if (e.key === "ArrowRight" && direction.x === 0) {
+        nextDirection = { x: gridSize, y: 0 };
+    }
 });
 
 // Mobile controls
-upBtn.addEventListener("click", () => direction = { x: 0, y: -gridSize });
-downBtn.addEventListener("click", () => direction = { x: 0, y: gridSize });
-leftBtn.addEventListener("click", () => direction = { x: -gridSize, y: 0 });
-rightBtn.addEventListener("click", () => direction = { x: gridSize, y: 0 });
+upBtn.addEventListener("click", () => {
+    if (direction.y === 0) nextDirection = { x: 0, y: -gridSize };
+});
+downBtn.addEventListener("click", () => {
+    if (direction.y === 0) nextDirection = { x: 0, y: gridSize };
+});
+leftBtn.addEventListener("click", () => {
+    if (direction.x === 0) nextDirection = { x: -gridSize, y: 0 };
+});
+rightBtn.addEventListener("click", () => {
+    if (direction.x === 0) nextDirection = { x: gridSize, y: 0 };
+});
 
 startBtn.addEventListener("click", initGame);
 restartBtn.addEventListener("click", initGame);
